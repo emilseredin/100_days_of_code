@@ -23,4 +23,3 @@ while keep_going:
     else:
         turn_left()
         turned_right = 0
-
