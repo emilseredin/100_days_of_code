@@ -17,21 +17,21 @@ class Player:
         Card('Q'),
         Card('K'),
         Card('A')
-    ]
+    ] * 5
 
     def __init__(self, dealer=False):
         self.cards = []
         self.score = 0
-        if dealer:
-            self.deal()
-        else:
-            self.deal(2)
+        self.blackjack = False
+        self.deal(2)
 
     def deal(self, num=1):
         for i in range(num):
-            new_card = random.choice(Player.shoe)
+            new_card = Player.shoe.pop()
             self.cards.append(new_card)
             self.calculate_score()
+        if num == 2 and len(self.cards) == 2 and self.score == 21:
+            self.blackjack = True
 
     def calculate_score(self):
         cards = sorted(self.cards, key=lambda card: card.value)
@@ -45,3 +45,6 @@ class Player:
 
     def get_cards(self):
         return [card.face for card in self.cards]
+
+    def get_first_card(self):
+        return self.cards[0]
