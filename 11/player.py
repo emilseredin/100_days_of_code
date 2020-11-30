@@ -47,4 +47,4 @@ class Player:
         return [card.face for card in self.cards]
 
     def get_first_card(self):
-        return self.cards[0]
+        return self.cards[0].face

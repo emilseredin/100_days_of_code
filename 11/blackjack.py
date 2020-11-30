@@ -19,7 +19,7 @@ class Game:
         """
         computer_too_many = self.computer.score > 21
         player_over_computer = self.player.score > self.computer.score
-        tie = self.player.score == self.computer.score
+        tie = (self.player.score == self.computer.score) or (self.player.blackjack and self.computer.blackjack)
         if tie:
             return "It's a tie."
         elif computer_too_many:
@@ -36,7 +36,7 @@ class Game:
         print("Your cards: {}".format(self.player.get_cards()))
         print("Computer's first card: {}".format(
             [self.computer.get_first_card()]))
-        keep_dealing = True
+        keep_dealing = not self.player.blackjack
         while keep_dealing:
             answer = input(
                 "Type 'y' to get another card, type 'n' to pass: ").strip()
@@ -47,24 +47,17 @@ class Game:
                 if self.player.score > 21:
                     keep_dealing = False
                 print("Your cards: {}".format(self.player.get_cards()))
-                print("Your score: {}".format(self.player.score))
-        print("Your final hand: {}".format(self.player.get_cards()))
+        print("Your final score: {}".format(self.player.score))
         message = ""
-        if self.player.blackjack:
-            message = "It's a blackjack! Congratulations, you win!"
-        elif self.player.score > 21:
+        if self.player.score > 21:
             message = "Too many. You lose."
         else:
-            print("Your final score: {}".format(self.player.score))
             keep_dealing = True
             while keep_dealing:
                 self.computer.deal()
                 if self.computer.score > 16:
                     keep_dealing = False
-            print("Computer's final hand: {}".format(self.computer.get_cards()))
-            if self.computer.blackjack:
-                message = "Blackjack on computer's hand. You lose."
-            else:
-                print("Computer's final score: {}".format(self.computer.score))
-                message = self.determine_winner()
+                    print("Computer's cards: {}".format(self.computer.get_cards()))
+            print("Computer's final score: {}".format(self.computer.score))
+            message = self.determine_winner()
         print(message)
