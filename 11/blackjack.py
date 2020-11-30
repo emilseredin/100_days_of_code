@@ -35,7 +35,8 @@ class Game:
         """
         print("Your cards: {}".format(self.player.get_cards()))
         print("Computer's first card: {}".format(
-            [self.computer.get_first_card()]))
+            self.computer.get_first_card()))
+        # if a user has a blackjack, skip the loop
         keep_dealing = not self.player.blackjack
         while keep_dealing:
             answer = input(
