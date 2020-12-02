@@ -1,0 +1,36 @@
+Debugging tips:
+---------------
+
+- Describe the problem:
+    What is actually happening?
+    What should have happened instead?
+    What assumptions did you make?
+    Test your assumptions to see, which of them are false
+
+- Reproduce the bug
+    When does it happen?
+    When does it not happen?
+    Check the error message
+    If an error occurs randomly, try to make the code always produce the error
+
+- Play Computer (pretend to be Computer, i.e. read line by line)
+
+- Fix the Errors
+    Check the line of code where the error occurred
+    Check data types
+
+Syntax errors vs Semantics errors
+Semantic errors occure, when your code doesn't do what you want.
+Mainly, because you write wrong algorithm which is supposed to solve your problem.
+The steps which have to be taken by the computer should be described as precisely as possible.
+
+- Print is your friend
+- Use a debugger
+- Take a break
+- Ask a friend
+    People make different assumptions
+- Run often
+- Ask StackOverflow
+
+The more bugs you solve, the easier will it be to solve bugs un the future
+
