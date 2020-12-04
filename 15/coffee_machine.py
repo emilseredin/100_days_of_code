@@ -1,47 +1,30 @@
 from menu import Menu
-from cache_registry import CacheRegistry
+from cash_registry import CashRegistry
+from coffee_maker import CoffeeMaker
 
 
 class CoffeeMachine:
 
-    def __init__(self, water, milk, coffee):
-        self.water = water
-        self.milk = milk
-        self.coffee = coffee
-        self.cache_registry = CacheRegistry()
+    def __init__(self):
+        self.coffee_maker = CoffeeMaker(water=300, milk=200, coffee=100)
+        self.cash_registry = CashRegistry()
         self.menu = Menu()
         self.running = False
 
     def get_report(self):
-        return "Water: {}ml\nMilk: {}ml\nCoffee: {}\nMoney: {}".format(
-            self.water, self.milk, self.coffee, self.cache_registry.get_money())
-
-    def restock(self, water, milk, coffee):
-        self.water += water
-        self.milk += milk
-        self.coffee += coffee
-
-    def make(self, coffee):
-        ingredients = self.menu.get_ingredients(coffee)
-        price = self.menu.get_price(coffee)
-        if self.water < ingredients["water"]:
-            print("Sorry, there is not enough water.")
-        elif self.coffee < ingredients["coffee"]:
-            print("Sorry, there is not enough coffee.")
-        elif self.milk < ingredients["milk"]:
-            print("Sorry, there is not enough milk.")
-        else:
-            print("{} costs ${}".format(coffee.capitalize(), price))
-            complete, change = self.cache_registry.check_transaction(
-                cost=price)
-            if change:
-                print("Here is ${} in change.".format(change))
-            if complete:
-                self.water = self.water - ingredients["water"]
-                self.coffee = self.coffee - ingredients["coffee"]
-                print("Here is your {}. Enjoy!".format(coffee))
+        report = self.coffee_maker.get_report()
+        report.update(self.cash_registry.get_report())
+        message = ""
+        for element, quantity in report.items():
+            measure = "ml"
+            if element == "Coffee":
+                measure = "g"
+            if element == "Money":
+                measure = "$"
+                message += "{}: {}{}".format(element, measure, quantity)
             else:
-                print("Sorry, that's not enough money. Money refunded.")
+                message += "{}: {}{}\n".format(element, quantity, measure)
+        return message
 
     def start(self):
         self.running = True
@@ -53,8 +36,19 @@ class CoffeeMachine:
             elif choice == "report":
                 print(self.get_report())
             elif choice == "restock":
-                self.restock(300, 200, 30)
+                self.coffee_maker.restock(300, 200, 30)
             elif choice in self.menu.get_items():
-                self.make(choice)
+                price = self.menu.get_price(choice)
+                print("{} costs ${}".format(choice.capitalize(), price))
+                success, change = self.cash_registry.parse_transaction(
+                    cost=price)
+                if success:
+                    ingredients = self.menu.get_ingredients(choice)
+                    message = self.coffee_maker.make(choice, ingredients)
+                else:
+                    message = "Sorry, that's not enough money. Money refunded."
+                if change:
+                    message += "\nHere is ${} in change.".format(change)
+                print(message)
             else:
                 print("We don't serve this type of coffee.")

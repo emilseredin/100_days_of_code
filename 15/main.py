@@ -2,7 +2,7 @@ from coffee_machine import CoffeeMachine
 
 
 def main():
-    coffee_machine = CoffeeMachine(300, 200, 100)
+    coffee_machine = CoffeeMachine()
     coffee_machine.start()
 
 
