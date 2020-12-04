@@ -1,4 +1,5 @@
-from helper import MENU, COINS
+from menu import Menu
+from cache_registry import CacheRegistry
 
 
 class CoffeeMachine:
@@ -7,72 +8,53 @@ class CoffeeMachine:
         self.water = water
         self.milk = milk
         self.coffee = coffee
-        self.money = 0
+        self.cache_registry = CacheRegistry()
+        self.menu = Menu()
         self.running = False
 
     def get_report(self):
-        return "Water: {}ml\nMilk: {}ml\nCoffee: {}\nMoney: {}".format(self.water, self.milk, self.coffee, self.money)
+        return "Water: {}ml\nMilk: {}ml\nCoffee: {}\nMoney: {}".format(
+            self.water, self.milk, self.coffee, self.cache_registry.get_money())
 
     def restock(self, water, milk, coffee):
         self.water += water
         self.milk += milk
         self.coffee += coffee
 
-    def process_coins(self, cost):
-        insert_coins = True
-        value_inserted = 0
-        while insert_coins:
-            coin_type = input(
-                "Please choose the coin (penny/nickle/dime/quarter/stop): ").strip()
-            if coin_type == "stop":
-                insert_coins = False
-            else:
-                coin_amount = int(
-                    input("How many coins of this kind will you insert? ").strip())
-                value_inserted += COINS[coin_type] * coin_amount
-                value_left = cost - value_inserted
-                if value_left >= 0:
-                    print("${} more to insert.".format(cost - value_inserted))
-        if value_inserted == cost:
-            self.money = value_inserted
-            return True
-        elif value_inserted > cost:
-            self.money = cost
-            change = value_inserted - cost
-            print("Here is ${} in change.".format(change))
-            return True
-        else:
-            print("Sorry, that's not enough money. Money refunded.")
-            return False
-
     def make(self, coffee):
-        ingredients = MENU[coffee]["ingredients"]
-        price = MENU[coffee]["cost"]
-        if "water" in ingredients and self.water < ingredients["water"]:
+        ingredients = self.menu.get_ingredients(coffee)
+        price = self.menu.get_price(coffee)
+        if self.water < ingredients["water"]:
             print("Sorry, there is not enough water.")
-        elif "coffee" in ingredients and self.coffee < ingredients["coffee"]:
+        elif self.coffee < ingredients["coffee"]:
             print("Sorry, there is not enough coffee.")
-        elif "milk" in ingredients and self.milk < ingredients["milk"]:
+        elif self.milk < ingredients["milk"]:
             print("Sorry, there is not enough milk.")
         else:
             print("{} costs ${}".format(coffee.capitalize(), price))
-            if self.process_coins(cost=price):
+            complete, change = self.cache_registry.check_transaction(
+                cost=price)
+            if change:
+                print("Here is ${} in change.".format(change))
+            if complete:
                 self.water = self.water - ingredients["water"]
                 self.coffee = self.coffee - ingredients["coffee"]
                 print("Here is your {}. Enjoy!".format(coffee))
+            else:
+                print("Sorry, that's not enough money. Money refunded.")
 
     def start(self):
         self.running = True
         while self.running:
-            answer = input(
+            choice = input(
                 "What would you like? (espresso/latte/cappuccino): ").strip()
-            if answer == "off":
+            if choice == "off":
                 self.running = False
-            elif answer == "report":
+            elif choice == "report":
                 print(self.get_report())
-            elif answer == "restock":
+            elif choice == "restock":
                 self.restock(300, 200, 30)
-            elif answer in MENU:
-                self.make(answer)
+            elif choice in self.menu.get_items():
+                self.make(choice)
             else:
                 print("We don't serve this type of coffee.")
