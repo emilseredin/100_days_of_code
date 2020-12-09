@@ -23,6 +23,7 @@ def draw(colors):
         Distance between circles is 50px 
     """
     timmy = turtle.Turtle()
+    timmy.hideturtle()
     timmy.speed(20)
     timmy.penup()
     init_x = -410
