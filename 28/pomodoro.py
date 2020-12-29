@@ -27,6 +27,10 @@ class Pomodoro():
         self.window = Tk()
         self.window.title("Pomodoro")
         self.window.config(padx=100, pady=60, bg=YELLOW)
+        self.completed = 0
+        self.state = "work"
+
+    def run(self):
         self.timer_label = Label(
             text="Timer", bg=YELLOW, fg=GREEN, font=(FONT_NAME, 35))
         self.timer_label.grid(row=0, column=1)
@@ -38,22 +42,46 @@ class Pomodoro():
         self.reset_bt = Button(
             text="Reset", bg="white", fg="black",
             font=(FONT_NAME, 11, "bold"), height=1, width=2, border=0, highlightthickness=0,
-            command=self.reset_timer)
+            command=self.reset_timer, state="disabled")
         self.reset_bt.grid(row=2, column=2)
         self.timer_label = Label(
             text="", bg=YELLOW, fg=GREEN, font=(FONT_NAME, 25))
         self.timer_label.grid(row=3, column=1)
         self.canvas = MainCanvas()
-        self.timer = Timer(self.window, self.canvas, self.timer_label)
+        self.timer = Timer(self)
         self.window.mainloop()
 
     def run_timer(self):
+        self.reset_bt["state"] = "normal"
         self.start_bt["state"] = "disabled"
-        self.timer.run()
+        if self.state == "work":
+            self.timer.run(minutes=WORK_MIN)
+        else:
+            if self.completed % 4 == 0:
+                self.timer.run(minutes=LONG_BREAK_MIN)
+            else:
+                self.timer.run(minutes=SHORT_BREAK_MIN)
 
     def reset_timer(self):
+        self.reset_bt["state"] = "disabled"
         self.start_bt["state"] = "normal"
-        self.timer.reset()
+        self.window.after_cancel(self.timer.main_timer)
+        if self.state == "work":
+            text = "{}:00".format(WORK_MIN)
+            self.canvas.update_canvas(text)
+        else:
+            if self.completed % 4 == 0:
+                text = "{}:00".format(LONG_BREAK_MIN)
+                self.canvas.update_canvas(text)
+            else:
+                text = "{}:00".format(SHORT_BREAK_MIN)
+                self.canvas.update_canvas(text)
+
+    def toggle_state(self):
+        if self.state == "work":
+            self.state = "break"
+        else:
+            self.state = "work"
 
 
 class MainCanvas():
@@ -63,7 +91,7 @@ class MainCanvas():
                              bg=YELLOW, highlightthickness=0)
         self.pomodoro_image = PhotoImage(file="./tomato.png")
         self.canvas.create_image(100, 112, image=self.pomodoro_image)
-        self.canvas.create_text(100, 140, text="00:00", fill="white", font=(
+        self.canvas.create_text(100, 140, text="25:00", fill="white", font=(
             FONT_NAME, FONT_SIZE, FONT_WEIGHT), tag="time")
         self.canvas.grid(row=1, column=1)
 
@@ -75,35 +103,33 @@ class MainCanvas():
 
 class Timer():
 
-    def __init__(self, window, canvas, timer_label):
-        self.window = window
-        self.canvas = canvas
-        self.timer_label = timer_label
+    def __init__(self, pomodoro):
+        self.pomodoro = pomodoro
 
-    def run(self):
-        minutes = 0
-        seconds = minutes + 5
-        self.main_timer = self.window.after(0, self.countdown, seconds, minutes)
+    def run(self, minutes):
+        self.minutes = minutes
+        self.seconds = minutes * 60
+        self.main_timer = self.pomodoro.window.after(0, self.countdown)
 
-    def reset(self):
-        self.window.after_cancel(self.main_timer)
-        self.canvas.update_canvas("02:00")
-
-    def countdown(self, seconds, minutes):
-        time_left = self.get_time_string(minutes, seconds)
-        self.canvas.update_canvas(time_left)
-        if seconds == 0:
-            self.reset()
-            self.timer_label["text"] += CHECK
+    def countdown(self):
+        time_left = self.get_time_string()
+        self.pomodoro.canvas.update_canvas(time_left)
+        if self.seconds == 0:
+            if self.pomodoro.state == "work":
+                self.pomodoro.timer_label["text"] += CHECK
+                self.pomodoro.completed += 1
+            self.pomodoro.toggle_state()
+            self.pomodoro.reset_timer()   
         else:
-            if seconds % 60 == 0:
-                minutes -= 1
-            seconds -= 1
-            self.main_timer = self.window.after(
-                1000, self.countdown, seconds, minutes)
+            if self.seconds % 60 == 0:
+                self.minutes -= 1
+            self.seconds -= 1
+            self.main_timer = self.pomodoro.window.after(
+                1000, self.countdown)
     
-    def get_time_string(self, minutes, seconds):
-        seconds = seconds - minutes * 60
+    def get_time_string(self):
+        minutes = self.minutes
+        seconds = self.seconds - minutes * 60
         time_left = ""
         if minutes < 10:
             time_left += "0"
