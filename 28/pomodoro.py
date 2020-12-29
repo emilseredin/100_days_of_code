@@ -24,9 +24,9 @@ class Pomodoro():
         self.state = "work"
 
     def run(self):
-        self.timer_label = Label(
-            text="Timer", bg=YELLOW, fg=GREEN, font=(FONT_NAME, 35))
-        self.timer_label.grid(row=0, column=1)
+        self.heading = Label(
+            text="Work", bg=YELLOW, fg=GREEN, font=(FONT_NAME, 35))
+        self.heading.grid(row=0, column=1)
         self.start_bt = Button(
             text="Start", bg="white", fg="black", font=(FONT_NAME, 11, "bold"),
             height=1, width=2, border=0, highlightthickness=0,
@@ -62,13 +62,16 @@ class Pomodoro():
         if self.state == "work":
             text = "{}:00".format(WORK_MIN)
             self.canvas.update_canvas(text)
+            self.heading["text"] = "Work"
         else:
             if self.completed % 4 == 0:
                 text = "{}:00".format(LONG_BREAK_MIN)
                 self.canvas.update_canvas(text)
+                self.heading["text"] = "Long Break"
             else:
                 text = "{}:00".format(SHORT_BREAK_MIN)
                 self.canvas.update_canvas(text)
+                self.heading["text"] = "Short Break"
 
     def toggle_state(self):
         if self.state == "work":
