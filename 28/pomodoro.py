@@ -62,16 +62,16 @@ class Pomodoro():
         if self.state == "work":
             text = "{}:00".format(WORK_MIN)
             self.canvas.update_canvas(text)
-            self.heading["text"] = "Work"
+            self.heading.config(text="Work", fg=GREEN)
         else:
             if self.completed % 4 == 0:
                 text = "{}:00".format(LONG_BREAK_MIN)
                 self.canvas.update_canvas(text)
-                self.heading["text"] = "Long Break"
+                self.heading.config(text="Break", fg=RED)
             else:
                 text = "{}:00".format(SHORT_BREAK_MIN)
                 self.canvas.update_canvas(text)
-                self.heading["text"] = "Short Break"
+                self.heading.config(text="Break", fg=PINK)
 
     def toggle_state(self):
         if self.state == "work":
