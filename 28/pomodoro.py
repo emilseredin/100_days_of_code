@@ -98,7 +98,6 @@ class Timer():
         self.pomodoro = pomodoro
 
     def run(self, minutes):
-        self.minutes = minutes
         self.seconds = minutes * 60
         self.main_timer = self.pomodoro.window.after(0, self.countdown)
 
@@ -112,15 +111,13 @@ class Timer():
             self.pomodoro.toggle_state()
             self.pomodoro.reset_timer()
         else:
-            if self.seconds % 60 == 0:
-                self.minutes -= 1
             self.seconds -= 1
             self.main_timer = self.pomodoro.window.after(
                 1000, self.countdown)
 
     def get_time_string(self):
-        minutes = self.minutes
-        seconds = self.seconds - minutes * 60
+        minutes = self.seconds // 60
+        seconds = self.seconds % 60
         time_left = ""
         if minutes < 10:
             time_left += "0"
