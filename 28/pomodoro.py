@@ -48,7 +48,7 @@ class Pomodoro():
         self.reset_bt["state"] = "normal"
         self.start_bt["state"] = "disabled"
         if self.state == "work":
-            self.timer.run(minutes=WORK_MIN)
+            self.timer.run(minutes=1)
         else:
             if self.completed % 4 == 0:
                 self.timer.run(minutes=LONG_BREAK_MIN)
@@ -120,10 +120,11 @@ class Timer():
         seconds = self.seconds % 60
         time_left = ""
         if minutes < 10:
-            time_left += "0"
-        time_left += str(minutes)
-        time_left += ":"
+            time_left += "0{}:".format(minutes)
+        else:
+            time_left += "{}:".format(minutes)
         if seconds < 10:
-            time_left += "0"
-        time_left += str(seconds)
+            time_left += "0{}".format(seconds)
+        else:
+            time_left += "{}".format(seconds)
         return time_left
