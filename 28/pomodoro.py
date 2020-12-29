@@ -84,14 +84,12 @@ class MainCanvas():
                              bg=YELLOW, highlightthickness=0)
         self.pomodoro_image = PhotoImage(file="./tomato.png")
         self.canvas.create_image(100, 112, image=self.pomodoro_image)
-        self.canvas.create_text(100, 140, text="25:00", fill="white", font=(
+        self.timer_text = self.canvas.create_text(100, 140, text="25:00", fill="white", font=(
             FONT_NAME, FONT_SIZE, FONT_WEIGHT), tag="time")
         self.canvas.grid(row=1, column=1)
 
     def update_canvas(self, time: str):
-        self.canvas.delete("time")
-        self.canvas.create_text(100, 140, text=time, fill="white", font=(
-            FONT_NAME, FONT_SIZE, FONT_WEIGHT), tag="time")
+        self.canvas.itemconfig(self.timer_text, text=time)
 
 
 class Timer():
