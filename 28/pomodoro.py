@@ -13,13 +13,6 @@ SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 CHECK = "✓"
 
-class MainWindow():
-    
-    def __init__(self, title):
-        self.window = Tk()
-        self.window.title(title)
-        self.window.config(padx=100, pady=60, bg=YELLOW)
-
 
 class Pomodoro():
 
@@ -119,14 +112,14 @@ class Timer():
                 self.pomodoro.timer_label["text"] += CHECK
                 self.pomodoro.completed += 1
             self.pomodoro.toggle_state()
-            self.pomodoro.reset_timer()   
+            self.pomodoro.reset_timer()
         else:
             if self.seconds % 60 == 0:
                 self.minutes -= 1
             self.seconds -= 1
             self.main_timer = self.pomodoro.window.after(
                 1000, self.countdown)
-    
+
     def get_time_string(self):
         minutes = self.minutes
         seconds = self.seconds - minutes * 60
