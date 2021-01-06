@@ -51,13 +51,15 @@ class PasswordManager:
             message += "Password: {}\n".format(data["password"])
             is_ok = messagebox.askokcancel(message=message)
             if is_ok:
-                success = self.file_controller.write(data)
-                if success:
+                try:
+                    self.file_controller.write(data)
+                except Exception as e:
+                    messagebox.showwarning(message="Something went wrong")
+                    print(e)
+                else:
                     self.pw_inp.delete(0, "end")
                     self.website_inp.delete(0, "end")
                     messagebox.showinfo(message="Password has been added")
-                else:
-                    messagebox.showwarning(message="Something went wrong")
 
     def get_data(self):
         data = {
@@ -111,14 +113,11 @@ class FileController:
         self.path = "passwords.csv"
 
     def write(self, data):
-        if not data:
-            return False
         if not os.path.exists(self.path):
             self.initialize_file()
         with open(self.path, "a") as f:
             writer = csv.DictWriter(f, fieldnames=self.fieldnames)
             writer.writerow(data)
-        return True
 
     def initialize_file(self):
         with open(self.path, "w") as f:
