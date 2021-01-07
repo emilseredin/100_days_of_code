@@ -42,8 +42,8 @@ class PasswordManager:
     def save(self):
         try:
             data = self.get_data()
-        except EmptyFieldException as message:
-            messagebox.showwarning(message=message)
+        except ValueError as e:
+            messagebox.showwarning(message=e)
         else:
             message = "These are the details entered\n"
             message += "Website: {}\n".format(data["website"])
@@ -69,7 +69,7 @@ class PasswordManager:
         }
         ok = self.validate_data(data)
         if not ok:
-            raise EmptyFieldException("Empty field(s)")
+            raise ValueError("Empty field(s)")
         return data
 
     def validate_data(self, data):
@@ -123,10 +123,3 @@ class FileController:
         with open(self.path, "w") as f:
             writer = csv.DictWriter(f, fieldnames=self.fieldnames)
             writer.writeheader()
-
-
-class EmptyFieldException(Exception):
-    """ Raised when a form has empty fields upon submission """
-
-    def __init__(self, message):
-        super().__init__(message)
