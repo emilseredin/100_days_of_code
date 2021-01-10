@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-from flashcards import FlashCards
+from flashcards import Game
 
 
 def main():
-    game = FlashCards()
+    game = Game()
     game.run()
 
 
